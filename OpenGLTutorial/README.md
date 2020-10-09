@@ -1,93 +1,63 @@
-# build and compile our shader program: shaders are little programs that rest on the GPU 
-	Ins and outs: shaders are nothing more than programs transforming inputs to outputs. 
-		- GLSL : defined the in and out keywords specifically for that purpose. 
-			- vertex shader : receive some form of input
-			- uniforms : another way to pass data from our application on the CPU to the shaders on the GPU
-			- fragment shader : requires a vec4 color output variable, 
-				- since the fragment shaders needs to generate a final output color.
+#INITIAL STATE
+	## int main()
+		# glfwInit() : initialize GLFW
+			- glfwWindowHint()
+			- glfwWindowHint()
+			- glfwWindowHint()
 
-# vertex data/input : drawing something we have to first give OpenGL some input vertex data
-	- Normalized Device Coordinates (NDC) : Space where x, y and z values vary from -1.0 to 1.0
-	- define 3D position
+		# glfwCreateWindow() : creates a window object
+		# gladLoadGLLoader()
 
-# Vertex shader : written in the shader language GLSL ( OpenGL Shading Language)
-	- main()
-		- gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+		# shader(): import custom class
 
-	- compiling a shader 
-		- glCreateShader() : create a shader object; arg1: ShaderType
-		- glShaderSource() : ("assets/vertex_core.glsl") replace source code of a given shader object
-		- glCompileShader() : check if compliation was successful
-			- glGetShaderiv() : way to query infos from the shader object
-			- glGetShaderInfolog() : retrieve the error message
+		# float vertices[] : create attrib
+		# unsigned int indices [] : create index
 
-# Fragment shader : all about calculating the color output of your pixels
-	- main()
-		- FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+		# all objects and array object creation
+			- unsigned int VBO, VAO, EBO
+			- glGenVertexArrays(1, &VAO)
+			- glGenBuffers(1, &VAO)
+			- glGenBuffers(1, &EBO)
 
-	- compiling a shader 
-		- glCreateShader() : create a shader object; arg1: ShaderType
-		- glShaderSource() : ("assets/fragment_core.glsl") replace source code of a given shader object
-		- glCompileShader() : check if compliation was successful
-			- glGetShaderiv(): way to query infos from the shader object
-			- glGetShaderInfolog() : retrieve the error message
+			- glBindVertexArray(VAO)
+			- glBindBuffer(GL_ARRAY_BUFFER, VBO)
+			- glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices,  GL_STATIC_DRAW)
 
-# Create a Program & Link Shader : To use the recently compiled shaders we have to link them to a shader program object.
-	- glCreateProgram() :  returns the ID reference to the newly created program object.
-	- glAttachShader()*2 : attach compiled vertexShader & fragmentShader with program object
-	- glLinkProgram() : links all the attaceds shaders in one final shader program object
-	- glUseProgram() : sets given program object as the active shader program
-		- glGetProgramiv() : way to query infos from the programm object
-		- glGetProgramInfolog() : retrieve the error message
-	- glDeleteShader() : once we've linked them into the program object; we no longer need them anymore
+			- glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+			- glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW)
+		# position : attrib pointer
+				- glVertexAttribPointer(0)
+				- glEnablevertexAttribArray(0)
+		# color : attrib pointer
+				- glVertexAttribPointer(1)
+				- glEnablevertexAttribArray(1)
+		# Rendering
+				- while not glfwWindowShouldClose() : render loop until GLFW stops
+					- glClearColor()
+					- glClear()
+					- glBindVertexArray(VAO)
+					- shader.activate()
 
-	Right now we sent the input vertex data to the GPU and instructed the GPU how it should process the vertex data 
-	within a vertex and fragment shader. We're almost there, but not quite yet. 
-	OpenGL does not yet know how it should interpret the vertex data in memory and how it 
-	should connect the vertex data to the vertex shader's attributes.
+					- glDrawElements()
 
 
-#BINDING
-# Vertex Array Object (VAO)*required : makes switching between different vertex data and attribute configurations as easy			     
-					- glBindVertexArray() : binds a vertex array object
+					- glfwSwapBuffers()
+					- glfwPollEvents()
 
-# Vertex buffer object (VBO) : way to send vertex data to the graphics pipeline: the vertex shader
-	- vertex buffer objects : can store large numbers of vertices in the GPU memory
-		- glGenBuffers() : binds the buffer object to a buffer type target
-		- glBufferData() : allocates and stores data in the buffer object
+		# void processInput()
+	  # void framebuffer_size_callback()
 
-# Element Buffer Object (EBO) :  indexed drawing - solves the problem of overlapping vertices
-	- vertex buffer objects : can store large numbers of vertices in the GPU memory
-		- glGenBuffers() : binds the buffer object to a buffer type target
-		- glBufferData() : allocates and stores data in the buffer object
+# SHADER CLASS
+	## Shader
+		# program id
+		# Shader()
+		# void activate()
 
-		As you can see, there is some overlap on the vertices specified. We specify bottom right 
-		and top left twice! This is an overhead of 50% since the same rectangle could also be
-		specified with only 4 vertices, instead of 6. 
+		# string loadShaderSrc()
+		# GLuit compileShader()
 
-# Linking Vertex Atttribute : vertex shader allows us to specify any input we want in the form of vertex attributes
-	- glVertexAttribPointer : tells openGL how it should interpret the vertex data ( per vertex attribute)
-	- glEnableVertexAttribArray() : vertex attributes are disabled by
-
-
-	From that point on we have everything set up: we initialized the vertex data in a buffer using
-	a vertex buffer object, set up a vertex and fragment shader and told OpenGL how to link the vertex data
-	to the vertex shader's vertex attributes.
-
-
-
-# main :
-	- glClearColor()
-	- glClear()
-	- glUseProgram():  Installs a program object as part of current rendering state
-	- glBindVertexArray : binds a vertex array object
-	- glDrawArrays()*VBO : draw the amount of vertices found in the VBO ( vertex buffer object)
-	- glDrawElements()*EBO : does indexed drawing
-		- takes the VBO and EBO bound and renders the VBO vertices at the order found in the EBO
-		- advantage over glDrawArrays : removes duplicates
-
-save , get
-recording , querying
-
-https://learnopengl.com/Getting-started/Hello-Triangle
-http://www.songho.ca/opengl/
+		# void setBool()
+		# void setInt()
+		# void setFloat()
+		# void set4Float()
+		# void setMat4()
