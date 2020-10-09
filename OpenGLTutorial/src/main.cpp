@@ -20,6 +20,8 @@ void processInput(GLFWwindow* window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+float mixVal = 0.5f;
+
 int main() {
 
 	glfwInit();
@@ -159,6 +161,8 @@ int main() {
 		
 		glBindVertexArray(VAO);
 		shader.activate();
+
+		shader.setFloat("mixVal", mixVal);
 		// draw elements
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -181,6 +185,17 @@ int main() {
 void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+	}
+
+	// change mix value
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+		mixVal += .05f;
+		if (mixVal > 1) {
+			mixVal = 1.0f;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+		mixVal -= .05f;
 	}
 }
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
