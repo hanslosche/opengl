@@ -1,3 +1,4 @@
+
 #INITIAL STATE
 	## int main()
 		# glfwInit() : initialize GLFW
