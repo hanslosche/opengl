@@ -12,6 +12,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Shader.h"
+#include "io/keyboard.h"
+#include "io/mouse.h"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -21,6 +23,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 float mixVal = 0.5f;
+glm::mat4 mouseTransform = glm::mat4(1.0f);
 
 int main() {
 
@@ -38,14 +41,21 @@ int main() {
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
+
+	glViewport(0, 0, 800, 600);
+
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	glfwSetKeyCallback(window, Keyboard::keyCallback);
+
+	glfwSetCursorPosCallback(window, Mouse::cursorPosCallback);
+	glfwSetMouseButtonCallback(window, Mouse::mouseButtonCallback);
 		  
 
 	// SHADER _______________________________________________
@@ -161,7 +171,7 @@ int main() {
 		
 		glBindVertexArray(VAO);
 		shader.activate();
-
+		shader.setMat4("mouseTransform", mouseTransform);
 		shader.setFloat("mixVal", mixVal);
 		// draw elements
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -182,23 +192,40 @@ int main() {
 
 }
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+	glViewport(0, 0, width, height);
+}
+
 void processInput(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+	if (Keyboard::key(GLFW_KEY_ESCAPE)) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
 	// change mix value
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+	if (Keyboard::key(GLFW_KEY_UP)) {
 		mixVal += .05f;
 		if (mixVal > 1) {
 			mixVal = 1.0f;
 		}
 	}
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+	if (Keyboard::key(GLFW_KEY_DOWN)) {
 		mixVal -= .05f;
+		if (mixVal < 0) {
+			mixVal = 0.0f;
+		}
+	}
+	if (Mouse::button(GLFW_MOUSE_BUTTON_LEFT)) {
+		double x = Mouse::getMouseX();
+		double y = Mouse::getMouseY();
+
+		std::cout << x << ' ' << y << std::endl;
+
+		mouseTransform = glm::mat4(1.0f);
+		mouseTransform = glm::translate(mouseTransform, glm::vec3(x, y, 0.0f));
 	}
 }
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	glViewport(0, 0, width, height);
-}
+
+
+
+
 
