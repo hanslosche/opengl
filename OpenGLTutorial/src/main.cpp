@@ -52,8 +52,8 @@ int main() {
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+	// mouse & keyboard callback
 	glfwSetKeyCallback(window, Keyboard::keyCallback);
-
 	glfwSetCursorPosCallback(window, Mouse::cursorPosCallback);
 	glfwSetMouseButtonCallback(window, Mouse::mouseButtonCallback);
 		  
@@ -201,7 +201,6 @@ void processInput(GLFWwindow* window) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	// change mix value
 	if (Keyboard::key(GLFW_KEY_UP)) {
 		mixVal += .05f;
 		if (mixVal > 1) {
