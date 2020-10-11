@@ -14,18 +14,17 @@
 #include "Shader.h"
 #include "io/keyboard.h"
 #include "io/mouse.h"
+#include "io/screen.h"
+#include "io/camera.h"
 
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
-
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+void processInput(GLFWwindow* window, double deltaTime);
 
 float mixVal = 0.5f;
-glm::mat4 mouseTransform = glm::mat4(1.0f);
+Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-float x, y, z;
+double deltaTime = 0.0f;
+double lastFrame = 0.0f;
 
 int main() {
 
@@ -36,7 +35,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL Tutorial", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(Screen::SCR_WIDTH, Screen::SCR_HEIGHT, "OpenGL Tutorial", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Could not create window." << std::endl;
 		glfwTerminate();
@@ -52,12 +51,14 @@ int main() {
 
 	glViewport(0, 0, 800, 600);
 
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(window, Screen::framebufferSizeCallback);
 
 	// mouse & keyboard callback
 	glfwSetKeyCallback(window, Keyboard::keyCallback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // disable cursor
 	glfwSetCursorPosCallback(window, Mouse::cursorPosCallback);
 	glfwSetMouseButtonCallback(window, Mouse::mouseButtonCallback);
+	glfwSetScrollCallback(window, Mouse::mouseWheelCallback);
 		  
 
 	// SHADER _______________________________________________
@@ -199,13 +200,15 @@ int main() {
 	shader.setInt("texture1", 0);
 	shader.setInt("texture2", 1);
 
-	x = 0.0f;
-	y = 0.0f;
-	z = 3.0f;
 
 	while (!glfwWindowShouldClose(window)) {
+		// calculate dt
+		double currentTime = glfwGetTime();
+		deltaTime = currentTime - lastFrame;
+		lastFrame = currentTime;
+
 		// process input
-		processInput(window);
+		processInput(window, deltaTime);
 
 		// render 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -220,7 +223,6 @@ int main() {
 
 		glBindVertexArray(VAO);
 		shader.activate();
-		shader.setMat4("mouseTransform", mouseTransform);
 		shader.setFloat("mixVal", mixVal);
 		// draw elements
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -230,8 +232,8 @@ int main() {
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f, 0.5f, 0.5f));
-		view = glm::translate(view, glm::vec3(-x, -y, -z));
-		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		view = Camera::defaultCamera.getViewMatrix();
+		projection = glm::perspective(glm::radians(Camera::defaultCamera.zoom), (float)Screen::SCR_WIDTH / (float)Screen::SCR_HEIGHT, 0.1f, 100.0f);
 
 		shader.setMat4("model", model);
 		shader.setMat4("view", view);
@@ -256,7 +258,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window, double deltaTime) {
 	if (Keyboard::key(GLFW_KEY_ESCAPE)) {
 		glfwSetWindowShouldClose(window, true);
 	}
@@ -275,38 +277,31 @@ void processInput(GLFWwindow* window) {
 	}
 
 	// move camera
-	float changeVal = 0.01f;
-	if (Keyboard::key(GLFW_KEY_A)) {
-		x -= changeVal;
-	}
-	if (Keyboard::key(GLFW_KEY_D)){
-		x += changeVal;
-	}
-
-	if (Keyboard::key(GLFW_KEY_SPACE)) {
-		y += changeVal;
-	}
-
-	if (Keyboard::key(GLFW_KEY_LEFT_SHIFT)) {
-		y -= changeVal;
-	}
+	CameraDirection direction = CameraDirection::NONE;
 
 	if (Keyboard::key(GLFW_KEY_W)) {
-		z -= changeVal;
+		direction = CameraDirection::FORWARD;
 	}
-
 	if (Keyboard::key(GLFW_KEY_S)) {
-		z += changeVal;
+		direction = CameraDirection::BACKWARD;
 	}
-	/*if (Mouse::button(GLFW_MOUSE_BUTTON_LEFT)) {
-		double x = Mouse::getMouseX();
-		double y = Mouse::getMouseY();
+	if (Keyboard::key(GLFW_KEY_D)) {
+		direction = CameraDirection::RIGHT;
+	}
+	if (Keyboard::key(GLFW_KEY_A)) {
+		direction = CameraDirection::LEFT;
+	}
+	if (Keyboard::key(GLFW_KEY_SPACE)) {
+		direction = CameraDirection::UP;
+	}
+	if (Keyboard::key(GLFW_KEY_LEFT_SHIFT)) {
+		direction = CameraDirection::DOWN;
+	}
 
-		std::cout << x << ' ' << y << std::endl;
+	if ((int)direction) {
+		Camera::defaultCamera.updateCameraPos(direction, deltaTime);
+	}
 
-		mouseTransform = glm::mat4(1.0f);
-		mouseTransform = glm::translate(mouseTransform, glm::vec3(x, y, 0.0f));
-	}*/
 }
 
 

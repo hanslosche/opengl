@@ -7,7 +7,19 @@
 ## glfwCreateWindow() : creates a window object
 ## gladLoadGLLoader()
 
-## shader(): import custom class
+## SHADER CLASS
+	# program id
+	# Shader()
+	# void activate()
+
+	# string loadShaderSrc()
+	# GLuit compileShader()
+
+	# void setBool()
+	# void setInt()
+	# void setFloat()
+	# void set4Float()
+	# void setMat4()
 
 ## float vertices[] : create attrib
 ## unsigned int indices [] : create index
@@ -46,16 +58,3 @@
 ## void processInput()
 ## void framebuffer_size_callback()
 
-## SHADER CLASS
-	# program id
-	# Shader()
-	# void activate()
-
-	# string loadShaderSrc()
-	# GLuit compileShader()
-
-	# void setBool()
-	# void setInt()
-	# void setFloat()
-	# void set4Float()
-	# void setMat4()
