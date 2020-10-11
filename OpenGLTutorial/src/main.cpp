@@ -25,6 +25,8 @@ const unsigned int SCR_HEIGHT = 600;
 float mixVal = 0.5f;
 glm::mat4 mouseTransform = glm::mat4(1.0f);
 
+float x, y, z;
+
 int main() {
 
 	glfwInit();
@@ -152,7 +154,9 @@ int main() {
 	shader.setInt("texture1", 0);
 	shader.setInt("texture2", 1);
 
-
+	x = 0.0f;
+	y = 0.0f;
+	z = 3.0f;
 	
 	while (!glfwWindowShouldClose(window)) {
 		// process input
@@ -176,6 +180,16 @@ int main() {
 		// draw elements
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 projection = glm::mat4(1.0f);
+		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		view = glm::translate(view, glm::vec3(-x, -y, -z));
+		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
+		shader.setMat4("model", model);
+		shader.setMat4("view", view);
+		shader.setMat4("projection", projection);
 
 		glBindVertexArray(0);
 
