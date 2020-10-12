@@ -1,7 +1,12 @@
 #include "Shader.h"
 
 // constructor
+Shader::Shader() {};
 Shader::Shader(const char* vertexShaderPath, const char* fragShaderPath) {
+	generate(vertexShaderPath, fragShaderPath);
+}
+
+void Shader::generate(const char* vertexShaderPath, const char* fragShaderPath) {
 	int success;
 	char infoLog[512];
 
@@ -19,15 +24,14 @@ Shader::Shader(const char* vertexShaderPath, const char* fragShaderPath) {
 	// Linking errors
 	glGetProgramiv(id, GL_LINK_STATUS, &success);
 	if (!success) {
-	glGetProgramInfoLog(id, 512, NULL, infoLog);
-	std::cout << "Linking error:" << std::endl << infoLog << std::endl;
+		glGetProgramInfoLog(id, 512, NULL, infoLog);
+		std::cout << "Linking error:" << std::endl << infoLog << std::endl;
 	}
 
 	//delete shaders
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragShader);
 }
-
 // activate shader
 void Shader::activate() {
 	glUseProgram(id);

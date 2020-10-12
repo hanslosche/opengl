@@ -18,9 +18,13 @@ public:
 	unsigned int id;
 
 	// constructor
+	Shader();
 	Shader(const char* vertexShaderPath, const char* fragShaderPath);
 	// activate shader
 	void activate();
+
+	// generate
+	void generate(const char* vertexShaderPath, const char* fragShaderPath);
 
 	// utility functions 
 	std::string loadShaderSrc(const char* filePath);

@@ -70,6 +70,9 @@ glm::mat4 Camera::getViewMatrix() {
 	return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 }
 
+float Camera::getZoom() {
+	return zoom;
+}
 void Camera::updateCameraVectors() {
 	glm::vec3 direction;
 	direction.x = cos(glm::radians(yaw) * cos(glm::radians(pitch)));
