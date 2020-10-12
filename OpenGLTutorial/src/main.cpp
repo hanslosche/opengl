@@ -32,6 +32,10 @@ double deltaTime = 0.0f;
 double lastFrame = 0.0f;
 
 int main() {
+	int success;
+	char infoLog[512];
+
+	std::cout << "Hello, openGL!" << std::endl;
 
 	glfwInit();
 
