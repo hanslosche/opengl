@@ -152,7 +152,7 @@
     <ClCompile Include="src\io\mouse.cpp" />
     <ClCompile Include="src\io\screen.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\graphics\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\fragment_core.glsl" />
@@ -163,7 +163,7 @@
     <ClInclude Include="src\io\keyboard.h" />
     <ClInclude Include="src\io\mouse.h" />
     <ClInclude Include="src\io\screen.h" />
-    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\graphics\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\image1.jpg" />

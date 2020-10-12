@@ -11,7 +11,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Shader.h"
+#include "graphics/Shader.h"
+
 #include "io/keyboard.h"
 #include "io/mouse.h"
 #include "io/screen.h"
