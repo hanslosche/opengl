@@ -16,7 +16,10 @@ public:
 	static double getDX();
 	static double getDY();
 	static bool button(int _button);
-
+	static bool buttonChanged(int button);
+	static bool buttonWentUp(int button);
+	static bool buttonWentDown(int button);
+		
 private:
 	static double x;
 	static double y;
@@ -30,6 +33,7 @@ private:
 	static bool firstMouse;
 
 	static bool buttons[];
+	static bool buttonsChanged[];
 };
 
 #endif

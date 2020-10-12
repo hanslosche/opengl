@@ -22,6 +22,8 @@ void processInput(GLFWwindow* window, double deltaTime);
 
 float mixVal = 0.5f;
 Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera Camera::secondary(glm::vec3(5.0f, 5.0f, 5.0f));
+bool Camera::usingDefault = true;
 
 double deltaTime = 0.0f;
 double lastFrame = 0.0f;
@@ -117,10 +119,10 @@ int main() {
 	   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
-	unsigned int indices[] = {
-		0, 1, 2,	// first triangle
-		3, 1, 2		// second triangle
-	};
+	//unsigned int indices[] = {
+	//	0, 1, 2,	// first triangle
+	//	3, 1, 2		// second triangle
+	//};
 
 	// VBO & VAO
 	unsigned int VBO, VAO, EBO;
@@ -133,9 +135,6 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices,  GL_STATIC_DRAW);
 
-	// put index array in EBO
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// set attributes pointers
 	// position 
@@ -232,8 +231,10 @@ int main() {
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f, 0.5f, 0.5f));
-		view = Camera::defaultCamera.getViewMatrix();
-		projection = glm::perspective(glm::radians(Camera::defaultCamera.zoom), (float)Screen::SCR_WIDTH / (float)Screen::SCR_HEIGHT, 0.1f, 100.0f);
+		view = Camera::usingDefault ? Camera::defaultCamera.getViewMatrix() : Camera::secondary.getViewMatrix();
+		projection = glm::perspective(
+			glm::radians(Camera::usingDefault ? Camera::defaultCamera.zoom: Camera::secondary.zoom),
+			(float)Screen::SCR_WIDTH / (float)Screen::SCR_HEIGHT, 0.1f, 100.0f);
 
 		shader.setMat4("model", model);
 		shader.setMat4("view", view);
@@ -276,6 +277,12 @@ void processInput(GLFWwindow* window, double deltaTime) {
 		}
 	}
 
+	// update camera
+	if (Keyboard::keyWentDown(GLFW_KEY_TAB)) {
+		Camera::usingDefault = !Camera::usingDefault;
+	}
+
+
 	// move camera
 	CameraDirection direction = CameraDirection::NONE;
 
@@ -299,7 +306,12 @@ void processInput(GLFWwindow* window, double deltaTime) {
 	}
 
 	if ((int)direction) {
-		Camera::defaultCamera.updateCameraPos(direction, deltaTime);
+		if (Camera::usingDefault) {
+			Camera::defaultCamera.updateCameraPos(direction, deltaTime);
+		} 
+		else {
+			Camera::secondary.updateCameraPos(direction, deltaTime);
+		}
 	}
 
 }
