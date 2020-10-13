@@ -12,7 +12,7 @@ public:
 	Material material;
 
 	Cube(Material material, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 size = glm::vec3(1.0f, 1.0f, 1.0f))
-		: material(material), pos(pos), size(size){}
+		: material(material), pos(pos), size(size) {}
 
 	void init() {
 		int noVertices = 36;
@@ -67,7 +67,11 @@ public:
 			indices[i] = i;
 		}
 
-		mesh = Mesh(Vertex::genList(vertices, noVertices), indices);
+        Texture tex0("assets/image1.jpg", "texture0");
+        tex0.load();
+        Texture tex1("assets/image2.png", "texture1");
+        tex1.load();
+        mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex0, tex1 });
 	}
 
 	void render(Shader shader) {

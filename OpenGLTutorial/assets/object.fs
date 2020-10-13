@@ -7,14 +7,14 @@ struct Material {
 };
 
 struct Light { 
-    vec3 postion;
+    vec3 position;
 
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
 };
 
-out vec4 FragColor;
+ out vec4 FragColor;
 
  in vec3 FragPos;
  in vec3 Normal;

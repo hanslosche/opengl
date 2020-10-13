@@ -43,6 +43,8 @@ struct Material {
     static Material white_rubber;
     static Material yellow_rubber;
 
+    static Material mix(Material m1, Material m2, float mix = 0.5f);
+
 };
 
 #endif

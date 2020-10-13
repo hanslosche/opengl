@@ -1,4 +1,5 @@
 #include "mesh.h"
+#include <vector>
 #include <iostream>
 // generate list of vertices
 std::vector<Vertex> Vertex::genList(float* vertices, int noVertices) {
