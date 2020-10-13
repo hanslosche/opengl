@@ -66,12 +66,9 @@ public:
 		for (unsigned int i = 0; i < noVertices; i++) {
 			indices[i] = i;
 		}
-
-        Texture tex0("assets/image1.jpg", "texture0");
-        tex0.load();
-        Texture tex1("assets/image2.png", "texture1");
-        tex1.load();
-        mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex0, tex1 });
+        Texture tex("assets/flag.png", "material.diffuse");
+        tex.load();
+        mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex });
 	}
 
 	void render(Shader shader) {
@@ -81,8 +78,9 @@ public:
 		//model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f, 0.5f, 0.5f));
 		shader.setMat4("model", model);
 
-        shader.set3Float("material.ambient", material.ambient);
-        shader.set3Float("material.diffuse", material.diffuse);
+        
+        //shader.setInt("material.diffuse", mesh.textures[0].id);
+        mesh.textures[0].activate();
         shader.set3Float("material.specular", material.specular);
         shader.setFloat("material.shininess", material.shininess);
 

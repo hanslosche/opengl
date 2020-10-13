@@ -87,7 +87,7 @@ int main() {
 		// draw shapes
 		shader.activate();
 
-		shader.setFloat("mixVal", mixVal);
+		// set light position
 		shader.set3Float("light.position", lamp.pos);
 		shader.set3Float("viewPos", Camera::defaultCamera.cameraPos);
 
