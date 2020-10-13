@@ -1,5 +1,6 @@
 #include "mesh.h"
-
+#include <iostream>
+// generate list of vertices
 std::vector<Vertex> Vertex::genList(float* vertices, int noVertices) {
 	std::vector<Vertex> ret(noVertices);
 
@@ -23,10 +24,13 @@ std::vector<Vertex> Vertex::genList(float* vertices, int noVertices) {
 			vertices[i * stride + 7]
 		);
 	}
+
 	return ret;
 }
 
+
 Mesh::Mesh() {}
+
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) 
 	: vertices(vertices), indices(indices), textures(textures) {
 	setup();
@@ -34,12 +38,13 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 }
 
 void Mesh::render(Shader shader) {
+	//texture
 	for (unsigned int i = 0; i < textures.size(); i++) {
 		shader.setInt(textures[i].name, textures[i].id);
 		textures[i].activate();
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
-
+	// object stuff
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, vertices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -51,13 +56,12 @@ void Mesh::cleanup() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
-
 }
 
 void Mesh::setup() {
 	// create buffers/arrays
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &VAO); // vertex array object
+	glGenBuffers(1, &VBO); // vertex buffer object 
 	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);

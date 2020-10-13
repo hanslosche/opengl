@@ -3,9 +3,8 @@
 
 int Texture::currentId = 0;
 
-Texture::Texture() {
+Texture::Texture() {}
 
-}
 Texture::Texture(const char* path, const char* name, bool defaultParams) 
 	: path(path), name(name), id(currentId++){
 	generate();
@@ -33,7 +32,7 @@ void Texture::load(bool flip ) {
 	case 4:
 		colorMode = GL_RGBA;
 		break;
-	}
+	};
 
 	if (data) {
 		glBindTexture(GL_TEXTURE_2D, id);
@@ -68,5 +67,5 @@ void Texture::setBorderColor(float borderColor[4]) {
 }
 
 void Texture::activate() {
-
+	glActiveTexture(GL_TEXTURE0 + id);
 }

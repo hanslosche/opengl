@@ -20,11 +20,13 @@ public:
 	// constructor
 	Shader();
 	Shader(const char* vertexShaderPath, const char* fragShaderPath);
-	// activate shader
-	void activate();
 
 	// generate
 	void generate(const char* vertexShaderPath, const char* fragShaderPath);
+
+
+	// activate shader
+	void activate();
 
 	// utility functions 
 	std::string loadShaderSrc(const char* filePath);

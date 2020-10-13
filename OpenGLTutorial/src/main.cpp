@@ -66,7 +66,7 @@ int main() {
 	Shader lampShader("assets/objects.vs", "assets/lamps.fs");
 
 	// MODELS _______________________________________________
-	Cube cube(Material::silver, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
+	Cube cube(Material::emerald, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
 	cube.init();
 
 	Lamp lamp(glm::vec3(1.0f), glm::vec3(1.0), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(-1.0f, -0.5f, 0.5f), glm::vec3(0.25f));
@@ -98,6 +98,7 @@ int main() {
 
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
 		// create transformation 
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);

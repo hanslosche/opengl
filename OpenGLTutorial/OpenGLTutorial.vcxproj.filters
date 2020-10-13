@@ -48,12 +48,14 @@
     <ClCompile Include="src\graphics\model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\object.vs" />
     <None Include="assets\object.fs" />
     <None Include="assets\lamp.fs" />
-    <None Include="src\graphics\material.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\io\keyboard.h">

@@ -1,5 +1,4 @@
 #version 330 core
-out vec4 FragColor;
 struct Material {
     vec3 ambient;
     vec3 diffuse;
@@ -8,6 +7,8 @@ struct Material {
 };
 
 struct Light { 
+    vec3 postion;
+
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;

@@ -1,2 +1,2 @@
-﻿  main.cpp
-C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\graphics\models\cube.hpp(5,10): fatal error C1083: Cannot open include file: '../material.h': No such file or directory
+﻿  texture.cpp
+  OpenGLTutorial.vcxproj -> C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\x64\Debug\OpenGLTutorial.exe
