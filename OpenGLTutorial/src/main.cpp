@@ -66,7 +66,7 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS _______________________________________________
-	Cube cube(Material::mix(Material::emerald, Material::white_plastic, 0.5), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
+	Cube cube(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
 	cube.init();
 
 	Lamp lamp(glm::vec3(1.0f), glm::vec3(1.0), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(-1.0f, -0.5f, 0.5f), glm::vec3(0.25f));

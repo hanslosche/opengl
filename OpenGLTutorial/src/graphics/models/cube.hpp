@@ -11,8 +11,8 @@ public:
 
 	Material material;
 
-	Cube(Material material, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 size = glm::vec3(1.0f, 1.0f, 1.0f))
-		: material(material), pos(pos), size(size) {}
+	Cube( glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 size = glm::vec3(1.0f, 1.0f, 1.0f))
+		: pos(pos), size(size) {}
 
 	void init() {
 		int noVertices = 36;
@@ -68,7 +68,11 @@ public:
 		}
         Texture tex("assets/flag.png", "material.diffuse");
         tex.load();
-        mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex });
+
+        Texture tex_specular("assets/flag_specular.png", "material.specular");
+        tex_specular.load();
+
+        mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex, tex_specular });
 	}
 
 	void render(Shader shader) {
@@ -81,8 +85,8 @@ public:
         
         //shader.setInt("material.diffuse", mesh.textures[0].id);
         mesh.textures[0].activate();
-        shader.set3Float("material.specular", material.specular);
-        shader.setFloat("material.shininess", material.shininess);
+        mesh.textures[1].activate();
+        shader.setFloat("material.shininess", 0.5f);
 
 		Model::render(shader);
 	}

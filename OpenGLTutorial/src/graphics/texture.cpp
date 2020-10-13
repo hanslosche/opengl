@@ -4,7 +4,6 @@
 int Texture::currentId = 0;
 
 Texture::Texture() {}
-
 Texture::Texture(const char* path, const char* name, bool defaultParams) 
 	: path(path), name(name), id(currentId++){
 	generate();
