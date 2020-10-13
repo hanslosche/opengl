@@ -9,7 +9,6 @@ public:
 	glm::vec3 pos;
 	glm::vec3 size;
 
-	Material material;
 
 	Cube( glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 size = glm::vec3(1.0f, 1.0f, 1.0f))
 		: pos(pos), size(size) {}

@@ -99,5 +99,11 @@
     <Image Include="assets\image2.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="assets\flag_specular.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\flag.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

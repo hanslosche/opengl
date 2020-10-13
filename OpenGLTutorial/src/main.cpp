@@ -66,10 +66,26 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS _______________________________________________
-	Cube cube(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
-	cube.init();
+	glm::vec3 cubePositions[] = {
+		 glm::vec3(0.0f,  0.0f,  0.0f),
+		 glm::vec3(2.0f,  5.0f, -15.0f),
+		 glm::vec3(-1.5f, -2.2f, -2.5f),
+		 glm::vec3(-3.8f, -2.0f, -12.3f),
+		 glm::vec3(2.4f, -0.4f, -3.5f),
+		 glm::vec3(-1.7f,  3.0f, -7.5f),
+		 glm::vec3(1.3f, -2.0f, -2.5f),
+		 glm::vec3(1.5f,  2.0f, -2.5f),
+		 glm::vec3(1.5f,  0.2f, -1.5f),
+		 glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
 
-	Lamp lamp(glm::vec3(1.0f), glm::vec3(1.0), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(-1.0f, -0.5f, 0.5f), glm::vec3(0.25f));
+	Cube cubes[10];
+	for (unsigned int i = 0; i < 10; i++) {
+		cubes[i] = Cube(cubePositions[i], glm::vec3(1.0f));
+		cubes[i].init();
+	}
+
+	Lamp lamp(glm::vec3(1.0f), glm::vec3(0.1), glm::vec3(0.8f), glm::vec3(1.0f), glm::vec3(-1.0f, -0.5f, 0.5f), glm::vec3(0.25f));
 	lamp.init();
 
 	while (!screen.shouldClose()) {
@@ -89,15 +105,18 @@ int main() {
 
 		// set light position
 		shader.set3Float("light.position", lamp.pos);
+		shader.set3Float("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
 		shader.set3Float("viewPos", Camera::defaultCamera.cameraPos);
 
 		// set light strengths
 		shader.set3Float("light.ambient", lamp.ambient);
 		shader.set3Float("light.diffuse", lamp.diffuse);
 		shader.set3Float("light.specular", lamp.specular);
+		shader.setFloat("light.k0", 1.0f);
+		shader.setFloat("light.k1", 0.07f);
+		shader.setFloat("light.k2", 0.032f);
 
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// create transformation 
 		glm::mat4 view = glm::mat4(1.0f);
@@ -110,7 +129,9 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		cube.render(shader);
+		for (unsigned int i = 0; i < 10; i++){
+			cubes[i].render(shader);
+		};
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);
@@ -121,7 +142,10 @@ int main() {
 		screen.newFrame();
 		glfwPollEvents();
 	}
-	cube.cleanup();
+	for (unsigned int i = 0; i < 10; i++) {
+		cubes[i].cleanup();
+	};
+
 	lamp.cleanup();
 
 	glfwTerminate();
