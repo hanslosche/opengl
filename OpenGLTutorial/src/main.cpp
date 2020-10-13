@@ -13,6 +13,8 @@
 #include "graphics/model.h"
 
 #include "graphics/models/cube.hpp"
+#include "graphics/models/lamp.hpp"
+
 
 #include "io/keyboard.h"
 #include "io/mouse.h"
@@ -59,14 +61,16 @@ int main() {
 
 	screen.setParameters();
 
-
 	// SHADER _______________________________________________
 	Shader shader("assets/object.vs", "assets/object.fs");
+	Shader lampShader("assets/objects.vs", "assets/lamps.fs");
 
 	// MODELS _______________________________________________
-	Cube cube(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
+	Cube cube(Material::silver, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
 	cube.init();
 
+	Lamp lamp(glm::vec3(1.0f), glm::vec3(1.0), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(-1.0f, -0.5f, 0.5f), glm::vec3(0.25f));
+	lamp.init();
 
 	while (!screen.shouldClose()) {
 		// calculate dt
@@ -84,9 +88,17 @@ int main() {
 		shader.activate();
 
 		shader.setFloat("mixVal", mixVal);
+		shader.set3Float("light.position", lamp.pos);
+		shader.set3Float("viewPos", Camera::defaultCamera.cameraPos);
+
+		// set light strengths
+		shader.set3Float("light.ambient", lamp.ambient);
+		shader.set3Float("light.diffuse", lamp.diffuse);
+		shader.set3Float("light.specular", lamp.specular);
+
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
+		// create transformation 
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 		view = Camera::defaultCamera.getViewMatrix();
@@ -99,13 +111,20 @@ int main() {
 
 		cube.render(shader);
 
+		lampShader.activate();
+		lampShader.setMat4("view", view);
+		lampShader.setMat4("projection", projection);
+		lamp.render(lampShader);
+
 		// send new frame to window
 		screen.newFrame();
 		glfwPollEvents();
 	}
+	cube.cleanup();
+	lamp.cleanup();
 
-		glfwTerminate();
-		return 0;
+	glfwTerminate();
+	return 0;
 }
 
 
