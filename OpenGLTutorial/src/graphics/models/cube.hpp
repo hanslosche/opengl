@@ -65,7 +65,7 @@ public:
 		for (unsigned int i = 0; i < noVertices; i++) {
 			indices[i] = i;
 		}
-        Texture tex("assets/image2.png", "material.diffuse");
+        Texture tex("assets/flag.png", "material.diffuse");
         tex.load();
 
         Texture tex_specular("assets/flag_specular.png", "material.specular");
