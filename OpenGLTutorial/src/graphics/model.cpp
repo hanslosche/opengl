@@ -3,6 +3,20 @@
 Model::Model(glm::vec3 pos, glm::vec3 size, bool noTex)
 : pos(pos), size(size), noTex(noTex) {}
 
+void Model::loadModel(std::string path) {
+    Assimp::Importer import;
+    const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+        std::cout << "Could not load model at" << path << std::endl << import.GetErrorString() << std::endl;
+        return;
+    }
+
+    directory = path.substr(0, path.find_last_of("/"));
+
+    processNode(scene->mRootNode, scene);
+}
+
 void Model::render(Shader shader) {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, pos);
@@ -20,20 +34,6 @@ void Model::cleanup() {
     for (unsigned int i = 0; i < meshes.size(); i++) {
         meshes[i].cleanup();
     }
-}
-
-void Model::loadModel(std::string path) {
-    Assimp::Importer import;
-    const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        std::cout << "Could not load model at" << path << std::endl << import.GetErrorString() << std::endl;
-        return;
-    }
-
-    directory = path.substr(0, path.find_last_of("/"));
-
-    processNode(scene->mRootNode, scene);
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene) {
@@ -72,7 +72,6 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
             mesh->mNormals[i].z
         );
         // textures
-
         if (mesh->mTextureCoords[0]) {
             vertex.texCoord = glm::vec2(
                 mesh->mTextureCoords[0][i].x,

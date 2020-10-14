@@ -51,7 +51,7 @@ void SpotLight::render(Shader shader, int idx) {
     shader.setFloat(name + ".k2", k2);
 
     // set lighting values
-    shader.set3Float(name + ".ambient", ambient);
-    shader.set3Float(name + ".diffuse", diffuse);
-    shader.set3Float(name + ".specular", specular);
+    shader.set4Float(name + ".ambient", ambient);
+    shader.set4Float(name + ".diffuse", diffuse);
+    shader.set4Float(name + ".specular", specular);
 }

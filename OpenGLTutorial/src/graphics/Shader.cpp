@@ -131,7 +131,7 @@ void Shader::set4Float(const std::string& name, aiColor4D color) {
     glUniform4f(glGetUniformLocation(id, name.c_str()), color.r, color.g, color.b, color.a);
 }
 
-void Shader::set4Float(const std::string& name,glm::vec4 v) {
+void Shader::set4Float(const std::string& name, glm::vec4 v) {
     glUniform4f(glGetUniformLocation(id, name.c_str()), v.x, v.y, v.z, v.w);
 }
 

@@ -64,7 +64,6 @@ void Mesh::render(Shader shader) {
 			glActiveTexture(GL_TEXTURE0 + i);
 
 			// retrieve texture info
-			std::string number;
 			std::string name;
 			switch (textures[i].type) {
 			case aiTextureType_DIFFUSE:
@@ -82,7 +81,6 @@ void Mesh::render(Shader shader) {
 		}
 
 	}
-
 
 
 	// EBO  stuff

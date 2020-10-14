@@ -36,6 +36,9 @@ Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 3.0f));
 double deltaTime = 0.0f;
 double lastFrame = 0.0f;
 
+bool flashLightOn = false;
+Model m;
+
 int main() {
 
 	std::cout << "Hello, openGL!" << std::endl;
@@ -67,7 +70,7 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS _______________________________________________
-	Model m(glm::vec3(0.0f, -2.0f, -5.0), glm::vec3(0.05f));
+	m = Model(glm::vec3(0.0f, 0.0f, -1.0), glm::vec3(0.01f), false);
 	m.loadModel("assets/models/lotr_troll/scene.gltf");
 
 	// LIGHTS _______________________________________________ 
@@ -93,9 +96,9 @@ int main() {
 	SpotLight s = {
 		Camera::defaultCamera.cameraPos, Camera::defaultCamera.cameraFront,
 		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.0f)),
-		1.0f, 0.07f, 0.03f,
+		1.0f, 0.07f, 0.032f,
 		glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(1.0f), glm::vec4(1.0f)
-			};
+	};
 
 	while (!screen.shouldClose()) {
 		// calculate dt
@@ -121,10 +124,16 @@ int main() {
 		}
 
 		shader.setInt("noPointsLights", 4);
-		s.position = Camera::defaultCamera.cameraPos;
-		s.direction = Camera::defaultCamera.cameraFront;
-		s.render(shader, 0);
-		shader.setInt("noSpotLights", 1);
+
+		if (flashLightOn) {
+			s.position = Camera::defaultCamera.cameraPos;
+			s.direction = Camera::defaultCamera.cameraFront;
+			s.render(shader, 0);
+			shader.setInt("noSpotLights", 1);
+		}
+		else {
+			shader.setInt("noSpotLights", 0);
+		}
 
 		// create transformation 
 		glm::mat4 view = glm::mat4(1.0f);
@@ -168,17 +177,8 @@ void processInput(double deltaTime) {
 		screen.setShouldClose(true);
 	}
 
-	if (Keyboard::key(GLFW_KEY_UP)) {
-		mixVal += .05f;
-		if (mixVal > 1) {
-			mixVal = 1.0f;
-		}
-	}
-	if (Keyboard::key(GLFW_KEY_DOWN)) {
-		mixVal -= .05f;
-		if (mixVal < 0) {
-			mixVal = 0.0f;
-		}
+	if (Keyboard::keyWentDown(GLFW_KEY_L)) {
+		flashLightOn = !flashLightOn;
 	}
 
 	if (Keyboard::key(GLFW_KEY_W)) {

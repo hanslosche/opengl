@@ -25,7 +25,7 @@ public:
 		glm::vec3 pos = glm::vec3(0.0f),
 		glm::vec3 size = glm::vec3(1.0f))
 		: lightColor(lightColor),
-		pointLight({ pos, k0, k1, k2, ambient, diffuse, specular}),
+		pointLight({ pos, k0, k1, k2, ambient, diffuse, specular }),
 		Cube(pos, size) {}
 
 	void render(Shader shader) {
