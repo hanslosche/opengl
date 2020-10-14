@@ -1,6 +1,9 @@
 #include "mesh.h"
 
 #include <iostream>
+
+
+
 // generate list of vertices
 std::vector<Vertex> Vertex::genList(float* vertices, int noVertices) {
 	std::vector<Vertex> ret(noVertices);
@@ -40,16 +43,38 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 
 void Mesh::render(Shader shader) {
 	//texture
+	unsigned int diffuseIdx = 0;
+	unsigned int specularIdx = 0;
+
 	for (unsigned int i = 0; i < textures.size(); i++) {
-		shader.setInt(textures[i].name, textures[i].id);
-		textures[i].activate();
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+		// activate texture
+		glActiveTexture(GL_TEXTURE0 + i);
+
+		// retrieve texture info
+		std::string number;
+		std::string name;
+		switch (textures[i].type) {
+		case aiTextureType_DIFFUSE:
+			name = "diffuse" + std::to_string(diffuseIdx++);
+			break;
+		case aiTextureType_SPECULAR:
+			name = "specular" + std::to_string(specularIdx++);
+			break;
+		}
+
+		// set the shader value
+		shader.setInt(name, i);
+		// bind texture
+		textures[i].bind();
 	}
-	// object stuff
+
+
+	// EBO  stuff
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, vertices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
+	// reset
 	glActiveTexture(GL_TEXTURE0);
 }
 

@@ -4,16 +4,18 @@ struct Material {
     sampler2D specular;
     float shininess;
 };
+uniform sampler2D diffuse0;
+uniform sampler2D specular0;
 
 struct DirLight {
     vec3 direction;
     
     vec3 ambient;
     vec3 diffuse;
-    vec3 specular;
-    
+    vec3 specular;    
 };
 uniform DirLight dirLight;
+
 
 #define MAX_POINT_LIGHTS 20
 struct PointLight {
@@ -30,6 +32,7 @@ struct PointLight {
 };
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform int noPointLights;
+
 
 #define MAX_SPOT_LIGHTS 5
 struct SpotLight {
@@ -65,11 +68,11 @@ uniform int noSpotLights;
  vec3 calcSpotLight(int idx, vec3 norm, vec3 viewDir, vec3 texDiff, vec3 texSpec);
 
 void main(){
-
-    vec3 norm  = normalize(Normal);
+    // properties
+    vec3 norm    = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 texDiff = vec3(texture(material.diffuse, TexCoord));
-    vec3 texSpec = vec3(texture(material.specular, TexCoord));
+    vec3 texDiff = vec3(texture(diffuse0, TexCoord));
+    vec3 texSpec = vec3(texture(specular0, TexCoord));
 
     vec3 result;
 
@@ -87,7 +90,6 @@ void main(){
     }
 
     FragColor = vec4(result, 1.0);
-
 }
 
 vec3 calcDirLight(vec3 norm, vec3 viewDir, vec3 texDiff, vec3 texSpec){
@@ -131,7 +133,6 @@ vec3 calcPointLight(int idx, vec3 norm, vec3 viewDir, vec3 texDiff, vec3 texSpec
     specular *= attenuation;
 
     return vec3(ambient + diffuse + specular);
-
 }
 
 vec3 calcSpotLight( int idx, vec3 norm, vec3 viewDir, vec3 texDiff, vec3 texSpec){
@@ -174,5 +175,4 @@ vec3 calcSpotLight( int idx, vec3 norm, vec3 viewDir, vec3 texDiff, vec3 texSpec
     else {
         return ambient;
     }
-
 }

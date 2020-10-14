@@ -59,6 +59,7 @@
     <None Include="assets\object.vs" />
     <None Include="assets\object.fs" />
     <None Include="assets\lamp.fs" />
+    <None Include="assets\models\lotr_troll\scene.gltf" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\io\keyboard.h">

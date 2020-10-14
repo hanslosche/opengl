@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+
 #include "graphics/shader.h"
 #include "graphics/texture.h"
 #include "graphics/model.h"
@@ -23,6 +24,7 @@
 #include "io/camera.h"
 
 
+
 void processInput(double deltaTime);
 
 float mixVal = 0.5f;
@@ -35,8 +37,6 @@ double deltaTime = 0.0f;
 double lastFrame = 0.0f;
 
 int main() {
-	int success;
-	char infoLog[512];
 
 	std::cout << "Hello, openGL!" << std::endl;
 
@@ -67,24 +67,8 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS _______________________________________________
-	glm::vec3 cubePositions[] = {
-		 glm::vec3(0.0f,  0.0f,  0.0f),
-		 glm::vec3(2.0f,  5.0f, -15.0f),
-		 glm::vec3(-1.5f, -2.2f, -2.5f),
-		 glm::vec3(-3.8f, -2.0f, -12.3f),
-		 glm::vec3(2.4f, -0.4f, -3.5f),
-		 glm::vec3(-1.7f,  3.0f, -7.5f),
-		 glm::vec3(1.3f, -2.0f, -2.5f),
-		 glm::vec3(1.5f,  2.0f, -2.5f),
-		 glm::vec3(1.5f,  0.2f, -1.5f),
-		 glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
-
-	Cube cubes[10];
-	for (unsigned int i = 0; i < 10; i++) {
-		cubes[i] = Cube(cubePositions[i], glm::vec3(1.0f));
-		cubes[i].init();
-	}
+	Model m(glm::vec3(0.0f, -2.0f, -5.0), glm::vec3(0.05f));
+	m.loadModel("assets/models/lotr_troll/scene.gltf");
 
 	// LIGHTS _______________________________________________ 
 	DirLight dirLight = { glm::vec3(-0.2f, -1.0f, -0.3), glm::vec3(0.1f), glm::vec3(0.4f), glm::vec3(0.5f) };
@@ -153,9 +137,7 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		for (unsigned int i = 0; i < 10; i++){
-			cubes[i].render(shader);
-		};
+		m.render(shader);
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);
@@ -169,16 +151,12 @@ int main() {
 		screen.newFrame();
 		glfwPollEvents();
 	}
+	m.cleanup();
 
-	// mesh cleanup
-	for (unsigned int i = 0; i < 10; i++) {
-		cubes[i].cleanup();
-	};
 	// lamps cleanup
 	for (unsigned int i = 0; i < 4; i++) {
 		lamps[i].cleanup();
 	};
-
 
 	glfwTerminate();
 	return 0;
