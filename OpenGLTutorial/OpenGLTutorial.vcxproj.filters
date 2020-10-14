@@ -88,13 +88,13 @@
     <ClInclude Include="src\graphics\models\cube.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\models\lamp.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\graphics\material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\models\lamp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
