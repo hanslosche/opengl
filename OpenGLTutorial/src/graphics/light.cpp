@@ -6,9 +6,9 @@ void DirLight::render(Shader shader) {
     shader.set3Float("dirLight.direction", direction);
 
     // set lighting values
-    shader.set3Float("dirLight.ambient", ambient);
-    shader.set3Float("dirLight.diffuse", diffuse);
-    shader.set3Float("dirLight.specular", specular);
+    shader.set4Float("dirLight.ambient", ambient);
+    shader.set4Float("dirLight.diffuse", diffuse);
+    shader.set4Float("dirLight.specular", specular);
 }
 
 // render point light into shader
@@ -25,9 +25,9 @@ void PointLight::render(Shader shader, int idx) {
     shader.setFloat(name + ".k2", k2);
 
     // set lighting values
-    shader.set3Float(name + ".ambient", ambient);
-    shader.set3Float(name + ".diffuse", diffuse);
-    shader.set3Float(name + ".specular", specular);
+    shader.set4Float(name + ".ambient", ambient);
+    shader.set4Float(name + ".diffuse", diffuse);
+    shader.set4Float(name + ".specular", specular);
 }
 
 // render spot light into shader

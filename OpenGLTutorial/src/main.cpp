@@ -71,7 +71,7 @@ int main() {
 	m.loadModel("assets/models/lotr_troll/scene.gltf");
 
 	// LIGHTS _______________________________________________ 
-	DirLight dirLight = { glm::vec3(-0.2f, -1.0f, -0.3), glm::vec3(0.1f), glm::vec3(0.4f), glm::vec3(0.5f) };
+	DirLight dirLight = { glm::vec3(-0.2f, -1.0f, -0.3), glm::vec4(0.25f, 0.25f, 0.25f, 0.25f), glm::vec4(0.4f, 0.4f, 0.4f, 1.0f), glm::vec4(0.5f, 0.5f, 0.5f, 1.0f) };
 
 
 	glm::vec3 pointLightPositions[] = {
@@ -84,7 +84,7 @@ int main() {
 	Lamp lamps[4];
 	for (unsigned int i = 0; i < 4; i++) {
 		lamps[i] = Lamp(glm::vec3(1.0f),
-			glm::vec3(0.05f), glm::vec3(0.8f), glm::vec3(1.0f),
+			glm::vec4(0.05f, 0.05f, 0.05f, 1.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f), glm::vec4(1.0f),
 			1.0f, 0.07f, 0.032f,
 			pointLightPositions[i], glm::vec3(0.25f));
 		lamps[i].init();
@@ -94,7 +94,7 @@ int main() {
 		Camera::defaultCamera.cameraPos, Camera::defaultCamera.cameraFront,
 		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.0f)),
 		1.0f, 0.07f, 0.03f,
-		glm::vec3(0.0f), glm::vec3(1.0f), glm::vec3(1.0f)
+		glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(1.0f), glm::vec4(1.0f)
 			};
 
 	while (!screen.shouldClose()) {

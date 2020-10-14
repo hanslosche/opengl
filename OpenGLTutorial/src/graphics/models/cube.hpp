@@ -66,13 +66,6 @@ public:
     }
 
     void render(Shader shader) {
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, pos);
-        model = glm::scale(model, size);
-        shader.setMat4("model", model);
-
-        shader.setFloat("material.shininess", 0.5f);
-
         Model::render(shader);
     }
 };
