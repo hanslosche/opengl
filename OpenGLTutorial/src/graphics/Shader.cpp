@@ -6,7 +6,6 @@
 
 // default
 Shader::Shader() {}
-
 // initialize with paths to vertex and fragment shaders
 Shader::Shader(const char* vertexShaderPath, const char* fragShaderPath) {
     generate(vertexShaderPath, fragShaderPath);
