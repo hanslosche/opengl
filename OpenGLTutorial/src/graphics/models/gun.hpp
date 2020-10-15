@@ -11,13 +11,9 @@ public:
 		glm::mat4 model = glm::mat4(1.0f);
 
 		// set position
-
-		glm::vec3 down = glm::cross(Camera::defaultCamera.cameraFront, Camera::defaultCamera.cameraRight);
-
-		// set position
+		// multiply offset by unit in 2 directions
 		pos = Camera::defaultCamera.cameraPos + glm::vec3(Camera::defaultCamera.cameraFront * 8.0f) - glm::vec3(Camera::defaultCamera.cameraUp * 3.15f);
 		model = glm::translate(model, pos);
-
 
 		// rotate around camera right using dot product
 		float theta = acos(glm::dot(Camera::defaultCamera.worldUp, Camera::defaultCamera.cameraFront) /
