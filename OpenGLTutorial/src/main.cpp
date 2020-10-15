@@ -16,6 +16,7 @@
 
 #include "graphics/models/cube.hpp"
 #include "graphics/models/lamp.hpp"
+#include "graphics/models/gun.hpp"
 
 
 #include "io/keyboard.h"
@@ -31,10 +32,10 @@ float mixVal = 0.5f;
 
 Screen screen;
 
-Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 5.0f));
+Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 0.0f));
 
-double deltaTime = 0.0f;
-double lastFrame = 0.0f;
+double deltaTime = 0.0f; // time between frames
+double lastFrame = 0.0f; // time of last frame
 
 bool flashLightOn = false;
 Model m;
@@ -70,11 +71,16 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS _______________________________________________
-	m = Model(glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(0.05f), false);
-	m.loadModel("assets/models/lotr_troll/scene.gltf");
+	Gun g;
+	g.loadModel("assets/models/m4a1/scene.gltf");
+
+	//Model m;
+	//m = Model(glm::vec3(0.65f, 1.8f, -6.0f), glm::vec3(0.05f), true);
+	//m.loadModel("assets/models/lotr_troll/scene.gltf");
+
 
 	// LIGHTS _______________________________________________ 
-	DirLight dirLight = { glm::vec3(-0.2f, -1.0f, -0.3), glm::vec4(0.05f, 0.05f, 0.05f, 0.05f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.5f, 0.5f, 0.5f, 1.0f) };
+	DirLight dirLight = { glm::vec3(-0.2f, -1.0f, -0.3), glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.5f, 0.5f, 0.5f, 1.0f) };
 
 
 	glm::vec3 pointLightPositions[] = {
@@ -84,14 +90,14 @@ int main() {
 		glm::vec3(0.0f, 0.0f, -3.0f)
 	};
 
-	//Lamp lamps[4];
-	//for (unsigned int i = 0; i < 4; i++) {
-	//	lamps[i] = Lamp(glm::vec3(1.0f),
-	//		glm::vec4(0.05f, 0.05f, 0.05f, 1.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f), glm::vec4(0.0f),
-	//		1.0f, 0.07f, 0.032f,
-	//		pointLightPositions[i], glm::vec3(0.2f));
-	//	lamps[i].init();
-	//};
+	Lamp lamps[4];
+	for (unsigned int i = 0; i < 4; i++) {
+		lamps[i] = Lamp(glm::vec3(1.0f),
+			glm::vec4(0.05f, 0.05f, 0.05f, 1.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f), glm::vec4(0.0f),
+			1.0f, 0.07f, 0.032f,
+			pointLightPositions[i], glm::vec3(0.2f));
+		lamps[i].init();
+	};
 
 	SpotLight s = {
 		Camera::defaultCamera.cameraPos, Camera::defaultCamera.cameraFront,
@@ -119,9 +125,9 @@ int main() {
 
 		dirLight.render(shader);
 
-		//for (unsigned int i = 0; i < 4; i++) {
-		//	lamps[i].pointLight.render(shader, i);
-		//}
+		for (unsigned int i = 0; i < 4; i++) {
+			lamps[i].pointLight.render(shader, i);
+		}
 
 		shader.setInt("noPointsLights", 4);
 
@@ -146,26 +152,28 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
+		g.render(shader);
 		m.render(shader);
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);
 		lampShader.setMat4("projection", projection);
 
-		//for (unsigned int i = 0; i < 4; i++) {
-		//	lamps[i].render(lampShader);
-		//};
+		for (unsigned int i = 0; i < 4; i++) {
+			lamps[i].render(lampShader);
+		};
 
 		// send new frame  to window
 		screen.newFrame();
 		glfwPollEvents();
 	}
-	m.cleanup();
+	g.cleanup();
+	//m.cleanup();
 
 
-	//for (unsigned int i = 0; i < 4; i++) {
-	//	lamps[i].cleanup();
-	//};
+	for (unsigned int i = 0; i < 4; i++) {
+		lamps[i].cleanup();
+	};
 
 	glfwTerminate();
 	return 0;

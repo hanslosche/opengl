@@ -17,13 +17,15 @@ void Model::loadModel(std::string path) {
     processNode(scene->mRootNode, scene);
 }
 
-void Model::render(Shader shader) {
-    float timeValue = glfwGetTime();
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, pos);
-    model = glm::scale(model, size);
-    //model = glm::rotate(model, glm::radians(timeValue * 20 ), glm::vec3(0.1f, 0.1f, 0.1f));
-    shader.setMat4("model", model);
+void Model::render(Shader shader, bool setModel ) {
+    if (setModel) {
+        float timeValue = glfwGetTime();
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, pos);
+        model = glm::scale(model, size);
+        shader.setMat4("model", model);
+
+    }
 
     shader.setFloat("material.shininess", 0.5f);
 

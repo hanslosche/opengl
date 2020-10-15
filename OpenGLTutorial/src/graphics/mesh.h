@@ -18,6 +18,7 @@ struct Vertex {
 
 	static std::vector<Vertex> genList(float* vertices, int noVertices);
 };
+
 class Mesh {
 public:
 	std::vector<Vertex> vertices;
