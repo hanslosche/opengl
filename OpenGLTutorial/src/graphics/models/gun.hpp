@@ -1,11 +1,11 @@
 #include "../model.h"
 #include "../../io/camera.h"
 #include "../../io/keyboard.h"
+
 class Gun: public Model {
 public:
 	Gun()
 		: Model(glm::vec3(0.0f), glm::vec3(0.05f), true) {}
-
 
 	void render(Shader shader, bool setModel = false) {
 		glm::mat4 model = glm::mat4(1.0f);
