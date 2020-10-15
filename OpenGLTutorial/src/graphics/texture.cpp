@@ -3,7 +3,10 @@
 
 
 Texture::Texture(std::string dir, std::string path, aiTextureType type) 
-	: dir(dir), path(path), type(type) {}
+	: dir(dir), path(path), type(type) {
+	generate();
+}
+
 
 
 void Texture::generate() {

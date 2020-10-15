@@ -31,7 +31,7 @@ float mixVal = 0.5f;
 
 Screen screen;
 
-Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 5.0f));
 
 double deltaTime = 0.0f;
 double lastFrame = 0.0f;
@@ -70,8 +70,8 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS _______________________________________________
-	m = Model(glm::vec3(0.65f, 1.8f, -6.0f), glm::vec3(3.0f), false);
-	m.loadModel("assets/models/mars/scene.gltf");
+	m = Model(glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(0.05f), false);
+	m.loadModel("assets/models/lotr_troll/scene.gltf");
 
 	// LIGHTS _______________________________________________ 
 	DirLight dirLight = { glm::vec3(-0.2f, -1.0f, -0.3), glm::vec4(0.05f, 0.05f, 0.05f, 0.05f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.5f, 0.5f, 0.5f, 1.0f) };

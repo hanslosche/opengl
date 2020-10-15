@@ -22,7 +22,7 @@ void Model::render(Shader shader) {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, pos);
     model = glm::scale(model, size);
-    model = glm::rotate(model, glm::radians(timeValue * 20 ), glm::vec3(0.1f, 0.1f, 0.1f));
+    //model = glm::rotate(model, glm::radians(timeValue * 20 ), glm::vec3(0.1f, 0.1f, 0.1f));
     shader.setMat4("model", model);
 
     shader.setFloat("material.shininess", 0.5f);
