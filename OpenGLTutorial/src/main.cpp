@@ -13,6 +13,7 @@
 #include "graphics/texture.h"
 #include "graphics/model.h"
 #include "graphics/light.h"
+#include "graphics/models/sphere.cpp"
 
 #include "graphics/models/cube.hpp"
 #include "graphics/models/lamp.hpp"
@@ -71,8 +72,11 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS _______________________________________________
-	Gun g;
-	g.loadModel("assets/models/m4a1/scene.gltf");
+	//Gun g;
+	//g.loadModel("assets/models/m4a1/scene.gltf");
+
+	Sphere sphere(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.1f));
+	sphere.init();
 
 	//Model m;
 	//m = Model(glm::vec3(0.65f, 1.8f, -6.0f), glm::vec3(0.05f), true);
@@ -80,7 +84,7 @@ int main() {
 
 
 	// LIGHTS _______________________________________________ 
-	DirLight dirLight = { glm::vec3(-0.2f, -1.0f, -0.3), glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.5f, 0.5f, 0.5f, 1.0f) };
+	DirLight dirLight = { glm::vec3(-0.2f, -1.0f, -0.3), glm::vec4(0.4f, 0.4f, 0.4f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f) };
 
 
 	glm::vec3 pointLightPositions[] = {
@@ -92,7 +96,7 @@ int main() {
 
 	Lamp lamps[4];
 	for (unsigned int i = 0; i < 4; i++) {
-		lamps[i] = Lamp(glm::vec3(1.0f),
+		lamps[i] = Lamp(glm::vec3(1.0f, 0.0f, 0.0f),
 			glm::vec4(0.05f, 0.05f, 0.05f, 1.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f), glm::vec4(0.0f),
 			1.0f, 0.07f, 0.032f,
 			pointLightPositions[i], glm::vec3(0.2f));
@@ -101,8 +105,11 @@ int main() {
 
 	SpotLight s = {
 		Camera::defaultCamera.cameraPos, Camera::defaultCamera.cameraFront,
+		// cutOff				 		// outercutOff
 		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.0f)),
+		// k1  // k2  //k3
 		1.0f, 0.07f, 0.032f,
+		// ambient				 			// diffuse		// specular
 		glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(1.0f), glm::vec4(1.0f)
 	};
 
@@ -152,8 +159,7 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		g.render(shader);
-		m.render(shader);
+		sphere.render(shader);
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);
@@ -167,7 +173,7 @@ int main() {
 		screen.newFrame();
 		glfwPollEvents();
 	}
-	g.cleanup();
+	sphere.cleanup();
 	//m.cleanup();
 
 

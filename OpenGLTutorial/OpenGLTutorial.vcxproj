@@ -151,6 +151,7 @@
     <ClCompile Include="src\graphics\material.cpp" />
     <ClCompile Include="src\graphics\mesh.cpp" />
     <ClCompile Include="src\graphics\model.cpp" />
+    <ClCompile Include="src\graphics\models\sphere.cpp" />
     <ClCompile Include="src\graphics\texture.cpp" />
     <ClCompile Include="src\io\camera.cpp" />
     <ClCompile Include="src\io\keyboard.cpp" />
