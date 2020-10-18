@@ -151,8 +151,8 @@
     <ClCompile Include="src\graphics\material.cpp" />
     <ClCompile Include="src\graphics\mesh.cpp" />
     <ClCompile Include="src\graphics\model.cpp" />
-    <ClCompile Include="src\graphics\models\sphere.cpp" />
-    <ClCompile Include="src\graphics\physics\enviroment.cpp" />
+    <ClCompile Include="src\graphics\models\sphere.hpp" />
+    <ClCompile Include="src\graphics\physics\environment.cpp" />
     <ClCompile Include="src\graphics\physics\rigidbody.cpp" />
     <ClCompile Include="src\graphics\texture.cpp" />
     <ClCompile Include="src\io\camera.cpp" />
@@ -176,7 +176,8 @@
     <ClInclude Include="src\graphics\models\cube.hpp" />
     <ClInclude Include="src\graphics\models\gun.hpp" />
     <ClInclude Include="src\graphics\models\lamp.hpp" />
-    <ClInclude Include="src\graphics\physics\enviroment.h" />
+    <ClInclude Include="src\graphics\models\modelarray.hpp" />
+    <ClInclude Include="src\graphics\physics\environment.h" />
     <ClInclude Include="src\graphics\physics\rigidbody.h" />
     <ClInclude Include="src\graphics\shader.h" />
     <ClInclude Include="src\graphics\texture.h" />

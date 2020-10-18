@@ -1,5 +1,5 @@
 #include "model.h"
-#include "../graphics/physics/enviroment.h"
+#include "../graphics/physics/environment.h"
 
 #include <iostream>
 

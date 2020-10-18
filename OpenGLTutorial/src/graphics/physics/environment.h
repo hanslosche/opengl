@@ -1,9 +1,9 @@
-#ifndef ENVIROMENT_H
-#define ENVIROMENT_H
+#ifndef ENVIRONMENT_H
+#define ENVIRONMENT_H
 
 #include <glm/glm.hpp>
 
-class Enviroment {
+class Environment {
 public:
 	static glm::vec3 gravitationalAcceleration;
 };

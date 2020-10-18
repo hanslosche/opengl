@@ -1,6 +1,11 @@
-﻿  main.cpp
+﻿  sphere.hpp
+C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\graphics\models\modelarray.hpp(15,3): error C3861: 'mode': identifier not found
+C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\graphics\models\modelarray.hpp(37): message : see reference to class template instantiation 'ModelArray<T>' being compiled
+  main.cpp
+C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\graphics\models\modelarray.hpp(15,3): error C3861: 'mode': identifier not found
+C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\graphics\models\modelarray.hpp(37): message : see reference to class template instantiation 'ModelArray<T>' being compiled
 C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\graphics\models\cube.hpp(61,36): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\main.cpp(160,25): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\main.cpp(167,32): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\main.cpp(215,67): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  OpenGLTutorial.vcxproj -> C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\x64\Debug\OpenGLTutorial.exe
+C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\main.cpp(184,33): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\main.cpp(191,28): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Hans\Desktop\CVED\development\c++\projects\OpenGLTutorial\OpenGLTutorial\src\main.cpp(242,14): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  Generating Code...

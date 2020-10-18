@@ -2,18 +2,20 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
 #include <string>
+#include <vector>
+#include <stack>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 
 #include "graphics/shader.h"
 #include "graphics/texture.h"
 #include "graphics/model.h"
 #include "graphics/light.h"
-#include "graphics/models/sphere.cpp"
+#include "graphics/models/sphere.hpp"
+
+#include "graphics/physics/environment.h"
 
 #include "graphics/models/cube.hpp"
 #include "graphics/models/lamp.hpp"
@@ -27,18 +29,18 @@
 
 
 
-void processInput(double deltaTime);
+void processInput(double dt);
 
 Screen screen;
 
 Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 0.0f));
 
-double deltaTime = 0.0f; // time between frames
+double dt = 0.0f; // time between frames
 double lastFrame = 0.0f; // time of last frame
 
 bool flashLightOn = false;
 
-Sphere sphere(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.1f));
+SphereArray launchObjects;
 
 int main() {
 
@@ -71,15 +73,7 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS _______________________________________________
-	//Gun g;
-	//g.loadModel("assets/models/m4a1/scene.gltf");
-
-	sphere.init();
-
-	//Model m;
-	//m = Model(glm::vec3(0.65f, 1.8f, -6.0f), glm::vec3(0.05f), true);
-	//m.loadModel("assets/models/lotr_troll/scene.gltf");
-
+	launchObjects.init();
 
 	// LIGHTS _______________________________________________ 
 	DirLight dirLight = { glm::vec3(-0.2f, -1.0f, -0.3), glm::vec4(0.4f, 0.4f, 0.4f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f) };
@@ -92,14 +86,31 @@ int main() {
 		glm::vec3(0.0f, 0.0f, -3.0f)
 	};
 
-	Lamp lamps[4];
+	glm::vec4 ambient = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
+	glm::vec4 diffuse = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+	glm::vec4 specular = glm::vec4(1.0f);
+	float k0 = 1.0f;
+	float k1 = 0.09f;
+	float k2 = 0.032f;
+
+	//Lamp lamps[4];
+	//for (unsigned int i = 0; i < 4; i++) {
+	//	lamps[i] = Lamp(glm::vec3(1.0f, 1.0f, 1.0f),
+	//		ambient, diffuse, specular,
+	//		k0, k1, k2,
+	//		pointLightPositions[i], glm::vec3(0.25f));
+	//	lamps[i].init();
+	//};
+
+	LampArray lamps;
+	lamps.init();
 	for (unsigned int i = 0; i < 4; i++) {
-		lamps[i] = Lamp(glm::vec3(1.0f, 1.0f, 1.0f),
-			glm::vec4(0.05f, 0.05f, 0.05f, 1.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f), glm::vec4(0.0f),
-			1.0f, 0.07f, 0.032f,
-			pointLightPositions[i], glm::vec3(0.2f));
-		lamps[i].init();
-	};
+		lamps.lightInstances.push_back({
+			pointLightPositions[i],
+			k0, k1, k2,
+			ambient, diffuse, specular
+			});
+	}
 
 	SpotLight s = {
 		Camera::defaultCamera.cameraPos, Camera::defaultCamera.cameraFront,
@@ -114,24 +125,23 @@ int main() {
 	while (!screen.shouldClose()) {
 		// calculate dt
 		double currentTime = glfwGetTime();
-		deltaTime = currentTime - lastFrame;
+		dt = currentTime - lastFrame;
 		lastFrame = currentTime;
 
 		// process input
-		processInput(deltaTime);
+		processInput(dt);
 
 		// render 
 		screen.update();
 
 		// draw shapes
 		shader.activate();
-
 		shader.set3Float("viewPos", Camera::defaultCamera.cameraPos);
 
 		dirLight.render(shader);
 
 		for (unsigned int i = 0; i < 4; i++) {
-			lamps[i].pointLight.render(shader, i);
+			lamps.lightInstances[i].render(shader, i);
 		}
 
 		shader.setInt("noPointsLights", 4);
@@ -157,33 +167,50 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		sphere.render(shader, deltaTime);
+		std::stack<int> removeObjects;
+		for (int i = 0; i < launchObjects.instances.size(); i++) {
+			if (glm::length(Camera::defaultCamera.cameraPos - launchObjects.instances[i].pos) > 50.0f) {
+				removeObjects.push(i);
+				continue;
+			}
+		}
+
+		for (int i = 0; i < removeObjects.size(); i++) {
+			launchObjects.instances.erase(launchObjects.instances.begin() + removeObjects.top());
+			removeObjects.pop();
+		}
+
+		if (launchObjects.instances.size() > 0) {
+			launchObjects.render(shader, dt);
+		}
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);
 		lampShader.setMat4("projection", projection);
 
-		for (unsigned int i = 0; i < 4; i++) {
-			lamps[i].render(lampShader, deltaTime);
-		};
+		lamps.render(lampShader, dt);
 
 		// send new frame  to window
 		screen.newFrame();
 		glfwPollEvents();
 	}
-	sphere.cleanup();
 
+	lamps.cleanup();
 
-	for (unsigned int i = 0; i < 4; i++) {
-		lamps[i].cleanup();
-	};
+	launchObjects.cleanup();
 
 	glfwTerminate();
 	return 0;
 }
 
+void launchItem(float dt) {
+	RigidBody rb(1.0f, Camera::defaultCamera.cameraPos);
+	rb.applyImpulse(Camera::defaultCamera.cameraFront, 1000.0f, dt);
+	rb.applyAcceleration(Environment::gravitationalAcceleration);
+	launchObjects.instances.push_back(rb);
+}
 
-void processInput(double deltaTime) {
+void processInput(double dt) {
 	if (Keyboard::key(GLFW_KEY_ESCAPE)) {
 		screen.setShouldClose(true);
 	}
@@ -193,26 +220,26 @@ void processInput(double deltaTime) {
 	}
 
 	if (Keyboard::key(GLFW_KEY_W)) {
-		Camera::defaultCamera.updateCameraPos(CameraDirection::FORWARD, deltaTime);;
+		Camera::defaultCamera.updateCameraPos(CameraDirection::FORWARD, dt);;
 	}
 	if (Keyboard::key(GLFW_KEY_S)) {
-		Camera::defaultCamera.updateCameraPos(CameraDirection::BACKWARD, deltaTime);
+		Camera::defaultCamera.updateCameraPos(CameraDirection::BACKWARD, dt);
 	}
 	if (Keyboard::key(GLFW_KEY_D)) {
-		Camera::defaultCamera.updateCameraPos(CameraDirection::RIGHT, deltaTime);
+		Camera::defaultCamera.updateCameraPos(CameraDirection::RIGHT, dt);
 	}
 	if (Keyboard::key(GLFW_KEY_A)) {
-		Camera::defaultCamera.updateCameraPos(CameraDirection::LEFT, deltaTime);
+		Camera::defaultCamera.updateCameraPos(CameraDirection::LEFT, dt);
 	}
 	if (Keyboard::key(GLFW_KEY_SPACE)) {
-		Camera::defaultCamera.updateCameraPos(CameraDirection::UP, deltaTime);
+		Camera::defaultCamera.updateCameraPos(CameraDirection::UP, dt);
 	}
 	if (Keyboard::key(GLFW_KEY_LEFT_SHIFT)) {
-		Camera::defaultCamera.updateCameraPos(CameraDirection::DOWN, deltaTime);
+		Camera::defaultCamera.updateCameraPos(CameraDirection::DOWN, dt);
 	}
 
 	if (Keyboard::keyWentDown(GLFW_KEY_F)) {
-		sphere.rb.applyImpulse(Camera::defaultCamera.cameraFront, 5.0f, deltaTime);
+		launchItem(dt);		
 	}
 
 }

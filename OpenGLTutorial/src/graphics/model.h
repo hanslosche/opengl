@@ -17,6 +17,7 @@
 
 #include "../graphics/physics/rigidbody.h"
 
+
 class Model {
 public:
 	RigidBody rb;
