@@ -7,13 +7,13 @@ public:
 	Gun()
 		: Model(glm::vec3(0.0f), glm::vec3( 1/ 300.0f), true) {}
 
-	void render(Shader shader, bool setModel = false) {
+	void render(Shader shader, float dt, bool setModel = false) {
 		glm::mat4 model = glm::mat4(1.0f);
 
 		// set position
 		// multiply offset by unit in 2 directions
-		pos = Camera::defaultCamera.cameraPos + glm::vec3(Camera::defaultCamera.cameraFront * 0.5f) - glm::vec3(Camera::defaultCamera.cameraUp * 0.205f);
-		model = glm::translate(model, pos);
+		rb.pos = Camera::defaultCamera.cameraPos + glm::vec3(Camera::defaultCamera.cameraFront * 0.5f) - glm::vec3(Camera::defaultCamera.cameraUp * 0.205f);
+		model = glm::translate(model, rb.pos);
 
 		// rotate around camera right using dot product
 		float theta = acos(glm::dot(Camera::defaultCamera.worldUp, Camera::defaultCamera.cameraFront) /
@@ -29,7 +29,7 @@ public:
 		// scale 
 		model = glm::scale(model, size);
 		shader.setMat4("model", model);
-		Model::render(shader, false);
+		Model::render(shader, dt, false);
 
 	}
 

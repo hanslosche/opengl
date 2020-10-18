@@ -29,8 +29,6 @@
 
 void processInput(double deltaTime);
 
-float mixVal = 0.5f;
-
 Screen screen;
 
 Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -39,7 +37,8 @@ double deltaTime = 0.0f; // time between frames
 double lastFrame = 0.0f; // time of last frame
 
 bool flashLightOn = false;
-Model m;
+
+Sphere sphere(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.1f));
 
 int main() {
 
@@ -75,7 +74,6 @@ int main() {
 	//Gun g;
 	//g.loadModel("assets/models/m4a1/scene.gltf");
 
-	Sphere sphere(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.1f));
 	sphere.init();
 
 	//Model m;
@@ -96,7 +94,7 @@ int main() {
 
 	Lamp lamps[4];
 	for (unsigned int i = 0; i < 4; i++) {
-		lamps[i] = Lamp(glm::vec3(1.0f, 0.0f, 0.0f),
+		lamps[i] = Lamp(glm::vec3(1.0f, 1.0f, 1.0f),
 			glm::vec4(0.05f, 0.05f, 0.05f, 1.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f), glm::vec4(0.0f),
 			1.0f, 0.07f, 0.032f,
 			pointLightPositions[i], glm::vec3(0.2f));
@@ -159,14 +157,14 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		sphere.render(shader);
+		sphere.render(shader, deltaTime);
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);
 		lampShader.setMat4("projection", projection);
 
 		for (unsigned int i = 0; i < 4; i++) {
-			lamps[i].render(lampShader);
+			lamps[i].render(lampShader, deltaTime);
 		};
 
 		// send new frame  to window
@@ -174,7 +172,6 @@ int main() {
 		glfwPollEvents();
 	}
 	sphere.cleanup();
-	//m.cleanup();
 
 
 	for (unsigned int i = 0; i < 4; i++) {
@@ -212,6 +209,10 @@ void processInput(double deltaTime) {
 	}
 	if (Keyboard::key(GLFW_KEY_LEFT_SHIFT)) {
 		Camera::defaultCamera.updateCameraPos(CameraDirection::DOWN, deltaTime);
+	}
+
+	if (Keyboard::keyWentDown(GLFW_KEY_F)) {
+		sphere.rb.applyImpulse(Camera::defaultCamera.cameraFront, 5.0f, deltaTime);
 	}
 
 }

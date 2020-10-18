@@ -1,7 +1,31 @@
 #include "model.h"
+#include "../graphics/physics/enviroment.h"
+
+#include <iostream>
 
 Model::Model(glm::vec3 pos, glm::vec3 size, bool noTex)
-: pos(pos), size(size), noTex(noTex) {}
+    : size(size), noTex(noTex) {
+    rb.pos = pos;
+ 
+}
+
+void Model::render(Shader shader, float dt, bool setModel) {
+    rb.update(dt);
+
+    if (setModel) {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, rb.pos);
+        model = glm::scale(model, size);
+        shader.setMat4("model", model);
+
+    }
+
+    shader.setFloat("material.shininess", 0.5f);
+
+    for (unsigned int i = 0; i < meshes.size(); i++) {
+        meshes[i].render(shader);
+    }
+}
 
 void Model::loadModel(std::string path) {
     Assimp::Importer import;
@@ -15,23 +39,6 @@ void Model::loadModel(std::string path) {
     directory = path.substr(0, path.find_last_of("/"));
 
     processNode(scene->mRootNode, scene);
-}
-
-void Model::render(Shader shader, bool setModel ) {
-    if (setModel) {
-        float timeValue = glfwGetTime();
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, pos);
-        model = glm::scale(model, size);
-        shader.setMat4("model", model);
-
-    }
-
-    shader.setFloat("material.shininess", 0.5f);
-
-    for (unsigned int i = 0; i < meshes.size(); i++) {
-        meshes[i].render(shader);
-    }
 }
 
 void Model::cleanup() {
