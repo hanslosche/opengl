@@ -147,15 +147,42 @@
   <ItemGroup>
     <ClCompile Include="lib\stb.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\graphics\light.cpp" />
+    <ClCompile Include="src\graphics\material.cpp" />
+    <ClCompile Include="src\graphics\mesh.cpp" />
+    <ClCompile Include="src\graphics\model.cpp" />
+    <ClCompile Include="src\graphics\texture.cpp" />
+    <ClCompile Include="src\io\camera.cpp" />
+    <ClCompile Include="src\io\keyboard.cpp" />
+    <ClCompile Include="src\io\mouse.cpp" />
+    <ClCompile Include="src\io\screen.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\graphics\shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\fragment_core.glsl" />
-    <None Include="assets\vertex_core.glsl" />
+    <None Include="assets\lamp.fs" />
+    <None Include="assets\object.fs" />
+    <None Include="assets\object.vs" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\graphics\light.h" />
+    <ClInclude Include="src\graphics\material.h" />
+    <ClInclude Include="src\graphics\mesh.h" />
+    <ClInclude Include="src\graphics\model.h" />
+    <ClInclude Include="src\graphics\models\cube.hpp" />
+    <ClInclude Include="src\graphics\models\lamp.hpp" />
+    <ClInclude Include="src\graphics\shader.h" />
+    <ClInclude Include="src\graphics\texture.h" />
+    <ClInclude Include="src\io\camera.h" />
+    <ClInclude Include="src\io\keyboard.h" />
+    <ClInclude Include="src\io\mouse.h" />
+    <ClInclude Include="src\io\screen.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\flag.png" />
+    <Image Include="assets\flag_specular.png" />
+    <Image Include="assets\image1.jpg" />
+    <Image Include="assets\image2.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

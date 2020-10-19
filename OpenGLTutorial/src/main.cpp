@@ -2,24 +2,43 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <fstream>
-#include <sstream>
-#include <streambuf>
+
 #include <string>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Shader.h"
+#include "graphics/shader.h"
+#include "graphics/texture.h"
+#include "graphics/model.h"
+#include "graphics/light.h"
+
+#include "graphics/models/cube.hpp"
+#include "graphics/models/lamp.hpp"
 
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+#include "io/keyboard.h"
+#include "io/mouse.h"
+#include "io/screen.h"
+#include "io/camera.h"
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+
+void processInput(double deltaTime);
+
+float mixVal = 0.5f;
+
+Screen screen;
+
+Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 3.0f));
+
+double deltaTime = 0.0f;
+double lastFrame = 0.0f;
 
 int main() {
+	int success;
+	char infoLog[512];
+
+	std::cout << "Hello, openGL!" << std::endl;
 
 	glfwInit();
 
@@ -28,119 +47,184 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL Tutorial", NULL, NULL);
-	if (window == NULL) {
-		std::cout << "Could not create window." << std::endl;
+
+	if (!screen.init()) {
+		std::cout << "Could not open window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
-		  
 
-	// SHADER ++++++++++++++++++++++++++++++++++++++++
-	Shader shader("assets/vertex_core.glsl", "assets/fragment_core.glsl");
+	screen.setParameters();
 
+	// SHADER _______________________________________________
+	Shader shader("assets/object.vs", "assets/object.fs");
+	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
-	float vertices[] = {
-		// positions         // colors
-	 -0.5f,  0.5f, 1.0f,  1.0f, 1.0f, 0.5f,   // bottom right
-	  0.5f,  0.5f, 0.0f,  0.5f, 1.0f, 0.75f,   // top left  left
-	  0.5f, -0.5f, 0.0f,  0.0f, 0.6f, 1.0f,   //bottom right
-     -0.5f, -0.5f, 1.0f,  1.0f, 0.2f, 1.0f   // top right
+	// MODELS _______________________________________________
+	glm::vec3 cubePositions[] = {
+		 glm::vec3(0.0f,  0.0f,  0.0f),
+		 glm::vec3(2.0f,  5.0f, -15.0f),
+		 glm::vec3(-1.5f, -2.2f, -2.5f),
+		 glm::vec3(-3.8f, -2.0f, -12.3f),
+		 glm::vec3(2.4f, -0.4f, -3.5f),
+		 glm::vec3(-1.7f,  3.0f, -7.5f),
+		 glm::vec3(1.3f, -2.0f, -2.5f),
+		 glm::vec3(1.5f,  2.0f, -2.5f),
+		 glm::vec3(1.5f,  0.2f, -1.5f),
+		 glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
-	unsigned int indices[] = {
-		0, 1, 2,	// first triangle
-		2, 3, 0		// second triangle
+
+	Cube cubes[10];
+	for (unsigned int i = 0; i < 10; i++) {
+		cubes[i] = Cube(cubePositions[i], glm::vec3(1.0f));
+		cubes[i].init();
+	}
+
+	// LIGHTS _______________________________________________ 
+	DirLight dirLight = { glm::vec3(-0.2f, -1.0f, -0.3), glm::vec3(0.1f), glm::vec3(0.4f), glm::vec3(0.5f) };
+
+
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(0.7f, 0.2f, 2.0f),
+		glm::vec3(2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f, 2.0f, -12.0f),
+		glm::vec3(0.0f, 0.0f, -3.0f)
 	};
 
-	// VBO & VAO
-	unsigned int VBO, VAO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	Lamp lamps[4];
+	for (unsigned int i = 0; i < 4; i++) {
+		lamps[i] = Lamp(glm::vec3(1.0f),
+			glm::vec3(0.05f), glm::vec3(0.8f), glm::vec3(1.0f),
+			1.0f, 0.07f, 0.032f,
+			pointLightPositions[i], glm::vec3(0.25f));
+		lamps[i].init();
+	};
 
-	// bind VBO & VAO
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices,  GL_STATIC_DRAW);
+	SpotLight s = {
+		Camera::defaultCamera.cameraPos, Camera::defaultCamera.cameraFront,
+		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.0f)),
+		1.0f, 0.07f, 0.03f,
+		glm::vec3(0.0f), glm::vec3(1.0f), glm::vec3(1.0f)
+			};
 
-	// put index array in EBO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	while (!screen.shouldClose()) {
+		// calculate dt
+		double currentTime = glfwGetTime();
+		deltaTime = currentTime - lastFrame;
+		lastFrame = currentTime;
 
-	// set attributes pointers
-	// position 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	// color 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glm::mat4 trans = glm::mat4(1.0f);
-	trans = glm::rotate(trans, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
-
-	shader.activate();
-	shader.setMat4("transform", trans);
-
-	
-	while (!glfwWindowShouldClose(window)) {
 		// process input
-		processInput(window);
+		processInput(deltaTime);
 
 		// render 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		screen.update();
 
-		glBindVertexArray(VAO);
+		// draw shapes
 		shader.activate();
 
-		// set color 
-		float timeValue = glfwGetTime();
-		float blueValue = (sin(timeValue) / 2.0f) + 0.5f;
-		shader.set4Float("ourColor", 0.0f, 0.0f, blueValue, 1.0f);
-		trans = glm::rotate(trans, glm::radians(timeValue / 250), glm::vec3(0.1f, 0.1f, 0.1f));
-		shader.setMat4("transform", trans);
+		shader.set3Float("viewPos", Camera::defaultCamera.cameraPos);
 
+		dirLight.render(shader);
 
-		// draw elements
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		trans = glm::translate(trans, glm::vec3(0.5f, 0.5f, 0.0f));
-		shader.setMat4("transform", trans);
+		for (unsigned int i = 0; i < 4; i++) {
+			lamps[i].pointLight.render(shader, i);
+		}
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		trans = glm::translate(trans, glm::vec3(-0.5f, -0.5f, 0.0f));
-		shader.setMat4("transform", trans);
+		shader.setInt("noPointsLights", 4);
+		s.position = Camera::defaultCamera.cameraPos;
+		s.direction = Camera::defaultCamera.cameraFront;
+		s.render(shader, 0);
+		shader.setInt("noSpotLights", 1);
 
-		glBindVertexArray(0);
+		// create transformation 
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 projection = glm::mat4(1.0f);
+		view = Camera::defaultCamera.getViewMatrix();
+		projection = glm::perspective(
+			glm::radians(Camera::defaultCamera.zoom),
+			(float)Screen::SCR_WIDTH / (float)Screen::SCR_HEIGHT, 0.1f, 100.0f);
 
-		// send new frame to window
-		glfwSwapBuffers(window);
+		shader.setMat4("view", view);
+		shader.setMat4("projection", projection);
+
+		for (unsigned int i = 0; i < 10; i++){
+			cubes[i].render(shader);
+		};
+
+		lampShader.activate();
+		lampShader.setMat4("view", view);
+		lampShader.setMat4("projection", projection);
+
+		for (unsigned int i = 0; i < 4; i++) {
+			lamps[i].render(lampShader);
+		};
+
+		// send new frame  to window
+		screen.newFrame();
 		glfwPollEvents();
 	}
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteVertexArrays(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+
+	// mesh cleanup
+	for (unsigned int i = 0; i < 10; i++) {
+		cubes[i].cleanup();
+	};
+	// lamps cleanup
+	for (unsigned int i = 0; i < 4; i++) {
+		lamps[i].cleanup();
+	};
+
 
 	glfwTerminate();
 	return 0;
-
 }
 
-void processInput(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, true);
+
+void processInput(double deltaTime) {
+	if (Keyboard::key(GLFW_KEY_ESCAPE)) {
+		screen.setShouldClose(true);
 	}
+
+	if (Keyboard::key(GLFW_KEY_UP)) {
+		mixVal += .05f;
+		if (mixVal > 1) {
+			mixVal = 1.0f;
+		}
+	}
+	if (Keyboard::key(GLFW_KEY_DOWN)) {
+		mixVal -= .05f;
+		if (mixVal < 0) {
+			mixVal = 0.0f;
+		}
+	}
+
+	if (Keyboard::key(GLFW_KEY_W)) {
+		Camera::defaultCamera.updateCameraPos(CameraDirection::FORWARD, deltaTime);;
+	}
+	if (Keyboard::key(GLFW_KEY_S)) {
+		Camera::defaultCamera.updateCameraPos(CameraDirection::BACKWARD, deltaTime);
+	}
+	if (Keyboard::key(GLFW_KEY_D)) {
+		Camera::defaultCamera.updateCameraPos(CameraDirection::RIGHT, deltaTime);
+	}
+	if (Keyboard::key(GLFW_KEY_A)) {
+		Camera::defaultCamera.updateCameraPos(CameraDirection::LEFT, deltaTime);
+	}
+	if (Keyboard::key(GLFW_KEY_SPACE)) {
+		Camera::defaultCamera.updateCameraPos(CameraDirection::UP, deltaTime);
+	}
+	if (Keyboard::key(GLFW_KEY_LEFT_SHIFT)) {
+		Camera::defaultCamera.updateCameraPos(CameraDirection::DOWN, deltaTime);
+	}
+
 }
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	glViewport(0, 0, width, height);
-}
+
+
+
+
 

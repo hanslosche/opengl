@@ -1,93 +1,151 @@
-# build and compile our shader program: shaders are little programs that rest on the GPU 
-	Ins and outs: shaders are nothing more than programs transforming inputs to outputs. 
-		- GLSL : defined the in and out keywords specifically for that purpose. 
-			- vertex shader : receive some form of input
-			- uniforms : another way to pass data from our application on the CPU to the shaders on the GPU
-			- fragment shader : requires a vec4 color output variable, 
-				- since the fragment shaders needs to generate a final output color.
 
-# vertex data/input : drawing something we have to first give OpenGL some input vertex data
-	- Normalized Device Coordinates (NDC) : Space where x, y and z values vary from -1.0 to 1.0
-	- define 3D position
+## glfwInit() : initialize GLFW
+	- glfwWindowHint()
+	- glfwWindowHint()
+	- glfwWindowHint()
 
-# Vertex shader : written in the shader language GLSL ( OpenGL Shading Language)
-	- main()
-		- gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+## SCREEN CLASS
+	- public:
+	    # static void framebufferSizeCallback()
+	    # Screen()
+	    # bool init()
+	    # setParameters()
+	    # void update()
+	    # void newFrame()
+	    # bool shouldClose()
+	    # void setShouldClose()
 
-	- compiling a shader 
-		- glCreateShader() : create a shader object; arg1: ShaderType
-		- glShaderSource() : ("assets/vertex_core.glsl") replace source code of a given shader object
-		- glCompileShader() : check if compliation was successful
-			- glGetShaderiv() : way to query infos from the shader object
-			- glGetShaderInfolog() : retrieve the error message
-
-# Fragment shader : all about calculating the color output of your pixels
-	- main()
-		- FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-
-	- compiling a shader 
-		- glCreateShader() : create a shader object; arg1: ShaderType
-		- glShaderSource() : ("assets/fragment_core.glsl") replace source code of a given shader object
-		- glCompileShader() : check if compliation was successful
-			- glGetShaderiv(): way to query infos from the shader object
-			- glGetShaderInfolog() : retrieve the error message
-
-# Create a Program & Link Shader : To use the recently compiled shaders we have to link them to a shader program object.
-	- glCreateProgram() :  returns the ID reference to the newly created program object.
-	- glAttachShader()*2 : attach compiled vertexShader & fragmentShader with program object
-	- glLinkProgram() : links all the attaceds shaders in one final shader program object
-	- glUseProgram() : sets given program object as the active shader program
-		- glGetProgramiv() : way to query infos from the programm object
-		- glGetProgramInfolog() : retrieve the error message
-	- glDeleteShader() : once we've linked them into the program object; we no longer need them anymore
-
-	Right now we sent the input vertex data to the GPU and instructed the GPU how it should process the vertex data 
-	within a vertex and fragment shader. We're almost there, but not quite yet. 
-	OpenGL does not yet know how it should interpret the vertex data in memory and how it 
-	should connect the vertex data to the vertex shader's attributes.
+	- private:
+	    # GLFWwindow* window
 
 
-#BINDING
-# Vertex Array Object (VAO)*required : makes switching between different vertex data and attribute configurations as easy			     
-					- glBindVertexArray() : binds a vertex array object
+### gladLoadGLLoader()
 
-# Vertex buffer object (VBO) : way to send vertex data to the graphics pipeline: the vertex shader
-	- vertex buffer objects : can store large numbers of vertices in the GPU memory
-		- glGenBuffers() : binds the buffer object to a buffer type target
-		- glBufferData() : allocates and stores data in the buffer object
+### screen.setParameters()
 
-# Element Buffer Object (EBO) :  indexed drawing - solves the problem of overlapping vertices
-	- vertex buffer objects : can store large numbers of vertices in the GPU memory
-		- glGenBuffers() : binds the buffer object to a buffer type target
-		- glBufferData() : allocates and stores data in the buffer object
+mesh << texture << shader
 
-		As you can see, there is some overlap on the vertices specified. We specify bottom right 
-		and top left twice! This is an overhead of 50% since the same rectangle could also be
-		specified with only 4 vertices, instead of 6. 
+## MESH CLASS
+	# struct Vertex { pos, normal , texCoord} : storage format and data 
+	# Mesh()
+	
+	- public:
+	    # struct Vertex  : applied
+	    # void render()
+    	# void cleanup()
+	
+	- private:
+	    # void setup() : VAO, VBO, EBO & attrib ptr.
+	    	# GL_ARRAY_BUFFER 
+	    	# GL_ELEMENT_ARRAY_BUFFER
 
-# Linking Vertex Atttribute : vertex shader allows us to specify any input we want in the form of vertex attributes
-	- glVertexAttribPointer : tells openGL how it should interpret the vertex data ( per vertex attribute)
-	- glEnableVertexAttribArray() : vertex attributes are disabled by
+## TEXTURE CLASS : include <stb/stb_image.h>
+	- public:
+	    # Texture()
+	    # void generate()
+	    # void load()
+	    # void setFilters()
+	    # setFilters()
+	    # setWrap()
+	    # setWrap()
+	    # void setBorderColor()
+	    # activate()
+
+## SHADER CLASS ( ".vs path", ".fs path")
+	- public:
+	    # program id
+	    # Shader()
+	    # void activate()
+
+	    # string loadShaderSrc()
+    	# GLuit compileShader()
+
+	    # void setBool();
+	    # void setInt();
+	    # void setFloat();
+	    # void set3Float();
+    	# void set3Float();
+	    # void set4Float();
+	    # void setMat4();
+
+## LAMP CLASS (".vs path", ".fs path") : LIGHT PROPERTIES WITH CUBE 
+	- class Lamp : public Cube {}
+		# lightColor
+		# PointLight pointlight
+		# vec3 ambient, diffuse, specular
+
+		# void render() : set light color
+	 
 
 
-	From that point on we have everything set up: we initialized the vertex data in a buffer using
-	a vertex buffer object, set up a vertex and fragment shader and told OpenGL how to link the vertex data
-	to the vertex shader's vertex attributes.
+
+## CUBE CLASS : MODEL : for loop for multiple cubes
+	# Cube()
+	# init()
+	# void render()
+
+	Example : #  glm::vec3 cubePositions[i] :  Cube()
+
+
+## LIGHTS :
+	# struct DirLight {}
+	# struct PointLight {}
+	# struct SpotLight {}
+
+	# void render*ALL
+
+	Example : #  DirLight dirLight = {}
+		  #  glm::vec3 pointLightPositions[i] : Lamp : pointlight
+		  #  SpotLight s = {}
+
+## while (!screen.shouldClose()) {}
+
+	# double currentTime = glfwGetTime()
+	# deltaTime = currentTime - lastFrame
+	# lastFrame = currentTime
+
+	# processInput(deltaTime) : process input	 
+	# screen.update() : render
+	# shader.activate() :  draw shapes
+	# shader.set3Float("viewPos", Camera::defaultCamera.cameraPos)
+	# dirLight.render(shader) :
+
+	# lamps[i].pointLight.render()
+	# shader.setInt("noPointsLights", 4) :
+	# s.position = Camera::defaultCamera.cameraPos : SpotLight s
+	# s.direction = Camera::defaultCamera.cameraFront 
+	# s.render(shader, 0)
+	# shader.setInt("noSpotLights", 1)
+
+		
+	# glm::mat4 view = glm::mat4(1.0f) 
+	# glm::mat4 projection = glm::mat4(1.0f);
+	# view = Camera::defaultCamera.getViewMatrix()
+	# projection = glm::perspective()
+
+	# shader.setMat4("view", view);
+	# shader.setMat4("projection", projection);
+
+	# cubes[i].render(shader) : for each 4 x times
+	# lampShader.activate();
+
+	# lampShader.setMat4("view", view);
+	# lampShader.setMat4("projection", projection);
+
+	# lamps[i].render(lampShader) : for each 4 x times
+	
+	# screen.newFrame() : send new frame  to window
+	# glfwPollEvents() 
 
 
 
-# main :
-	- glClearColor()
-	- glClear()
-	- glUseProgram():  Installs a program object as part of current rendering state
-	- glBindVertexArray : binds a vertex array object
-	- glDrawArrays()*VBO : draw the amount of vertices found in the VBO ( vertex buffer object)
-	- glDrawElements()*EBO : does indexed drawing
-		- takes the VBO and EBO bound and renders the VBO vertices at the order found in the EBO
-		- advantage over glDrawArrays : removes duplicates
+	# cubes[i].cleanup() : for each 4 x times 
 
-save , get
-recording , querying
+	# lamps[i].cleanup() : for each 4 x times
 
-https://learnopengl.com/Getting-started/Hello-Triangle
-http://www.songho.ca/opengl/
+	# glfwTerminate();
+	# return 0;
+
+## void processInput()
+## void framebuffer_size_callback()
+
